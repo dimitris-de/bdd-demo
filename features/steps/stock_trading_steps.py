@@ -1,4 +1,4 @@
-from behave import given, when, then
+from behave import given, when, then # type: ignore
 from src.service.TradingApp import TradingPlatform
 
 @given('I have an account with balance £{balance}')

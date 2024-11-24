@@ -1,3 +1,4 @@
+@TradingApp
 Feature: Portfolio Valuation
   As an investor
   I want to view the total value of my portfolio

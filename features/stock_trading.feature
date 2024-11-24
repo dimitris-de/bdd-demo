@@ -1,3 +1,4 @@
+@TradingApp
 Feature: Stock Trading
   As a user of the trading platform
   I want to be able to buy and sell stocks

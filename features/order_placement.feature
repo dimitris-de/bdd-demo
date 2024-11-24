@@ -1,3 +1,4 @@
+@TradingApp
 Feature: Order Placement
   As a user of the trading platform
   I want to place buy orders

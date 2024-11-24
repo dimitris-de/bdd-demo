@@ -1,6 +1,6 @@
-# BDD with Behave in Data Engineering
+# BDD with Behave
 
-Strengthening Acceptance Testing in Data Pipelines with Behave, AWS, GitLab, dbt, and Python
+**A Comprehensive Tutorial for Understanding and Integrating Behave into Your Projects**
 
 ---
 
@@ -10,13 +10,24 @@ Strengthening Acceptance Testing in Data Pipelines with Behave, AWS, GitLab, dbt
 2. [Acceptance Testing and End-to-End Testing](#acceptance-testing-and-end-to-end-testing)
 3. [Introduction to BDD](#introduction-to-bdd)
 4. [BDD as an Extension of TDD](#bdd-as-an-extension-of-tdd)
+   - [User Stories](#user-stories)
+   - [Acceptance Criteria](#acceptance-criteria)
 5. [What Is Behave?](#what-is-behave)
-6. [Installing and Using Behave](#installing-and-using-behave)
-7. [Use Cases in Data Engineering](#use-cases-in-data-engineering)
-8. [Best Practices](#best-practices)
-9. [Integrating Behave with GitLab CI/CD and AWS](#integrating-behave-with-gitlab-ci-cd-and-aws)
-10. [Resources](#resources)
-11. [Conclusion](#conclusion)
+6. [Understanding Gherkin Syntax and Step Definitions](#understanding-gherkin-syntax-and-step-definitions)
+   - [Placeholders and Format Specifiers](#placeholders-and-format-specifiers)
+   - [Data Tables in Gherkin Steps](#data-tables-in-gherkin-steps)
+   - [Scenario Outlines and Examples](#scenario-outlines-and-examples)
+   - [Tags in Behave](#tags-in-behave)
+7. [Installing and Using Behave](#installing-and-using-behave)
+8. [BDD Implementation Example](#bdd-implementation-example)
+   - [Feature File Explained](#feature-file-explained)
+   - [Step Definitions Explained](#step-definitions-explained)
+   - [Application Code Explained](#application-code-explained)
+9. [Best Practices](#best-practices)
+10. [Debugging in Behave](#debugging-in-behave)
+11. [Integrating Behave with GitLab CI/CD and AWS](#integrating-behave-with-gitlab-ci-cd-and-aws)
+12. [Resources](#resources)
+13. [Conclusion](#conclusion)
 
 ---
 
@@ -32,12 +43,14 @@ Strengthening Acceptance Testing in Data Pipelines with Behave, AWS, GitLab, dbt
 - **Improves Usability**: Identifies usability issues that may not have been apparent during earlier testing phases.
 - **Encourages Collaboration**: Promotes continuous collaboration between technical and non-technical team members.
 
-### Acceptance Testing as a Form of End-to-End Testing
+---
+
+## Acceptance Testing and End-to-End Testing
 
 Acceptance testing often involves end-to-end (E2E) scenarios to validate that the system meets business requirements in real-world conditions.
 
-- **Acceptance Testing**: Emphasizes the user perspective, focusing on whether the system meets user needs and acceptance criteria.
-- **End-to-End Testing**: Emphasizes the system perspective, focusing on the technical correctness of workflows across integrated components.
+- **Acceptance Testing**: Focuses on the user perspective, ensuring the system meets user needs and acceptance criteria.
+- **End-to-End Testing**: Focuses on the technical correctness of workflows across integrated components.
 
 ---
 
@@ -54,105 +67,212 @@ Acceptance testing often involves end-to-end (E2E) scenarios to validate that th
 
 ## BDD as an Extension of TDD
 
-**Test-Driven Development (TDD)** is a software development approach where developers write unit tests before writing the actual code. 
+**Test-Driven Development (TDD)** is a software development approach where developers write unit tests before writing the actual code.
 
-**TDD** 
-- The cycle is: **Write a failing test ➔ Write code to pass the test ➔ Refactor the code**.
-- Focuses primarily on the **internal logic and code functionality**.
+- **TDD Cycle**: **Write a failing test ➔ Write code to pass the test ➔ Refactor the code**.
+- **Focus**: Primarily on the **internal logic and code functionality**.
 
-**BDD extends TDD by:** 
+**BDD extends TDD by:**
 
 - Focusing on **user stories** and **acceptance criteria**.
-- Writing tests in a natural language format (Gherkin syntax).
+- Writing tests in a natural language format using **Gherkin syntax**.
 - Involving **business stakeholders** in the testing process.
 
-
-##### **User Stories**
+### User Stories
 
 - **Definition**: A user story is a simple description of a feature from the end-user's perspective.
-- **Format**: Often written in the format:
-  - *As a [type of user], I want [an action] so that [a benefit/a value].*
+- **Format**: Often written as:
+  - *As a [type of user], I want [an action] so that [a benefit/value].*
 - **Purpose**: Captures the **who**, **what**, and **why** of a requirement.
 
-##### **Acceptance Criteria**
+### Acceptance Criteria
 
 - **Definition**: Specific conditions that a software product must meet to be accepted by a user or stakeholder.
-- **Format**: Detailed requirements that are **testable** and **unambiguous**.
 - **Purpose**: Define the **boundaries** of a user story and what is needed for it to be considered complete.
 
-- **Complementary Components**: Acceptance criteria refine user stories by adding detailed conditions.
-- **Example**:
+**Example:**
 
-  **User Story**:
-  
-  - *As an online shopper, I want to place items in a shopping cart so that I can purchase multiple items at once.*
+**User Story**:
 
-  **Acceptance Criteria**:
+- *As a train operator, I want to assess train capacity so that I can ensure passenger safety and comfort.*
 
-  1. Users can add items to the cart from the product page.
-  2. The cart updates the total price automatically when items are added or removed.
-  3. Users can view all items in the cart before checkout.
-  4. Users can adjust the quantity of each item in the cart.
+**Acceptance Criteria**:
 
-- **Role in BDD**: These acceptance criteria are used to create **scenarios** in BDD that describe how the application should behave in various situations.
+1. The system calculates total capacity based on train type and number of carriages.
+2. The system determines if the number of passengers exceeds capacity.
+3. The system provides a "Sufficient" or "Insufficient" capacity status.
+4. Different train types have specific capacities per carriage.
 
+---
 
-
-### Comparison
+### Comparison of TDD and BDD
 
 | Aspect                  | TDD                                  | BDD                                   |
 |-------------------------|--------------------------------------|---------------------------------------|
-| Focus                   | Code functionality                   | System behavior                       |
-| Language                | Programming language (e.g., Python)  | Natural language (e.g., English)      |
-| Stakeholder Involvement | Developers                           | Developers, QA, Business Analysts     |
+| **Focus**               | Code functionality                   | System behavior                       |
+| **Language**            | Programming language (e.g., Python)  | Natural language (e.g., English)      |
+| **Stakeholder Involvement** | Developers                       | Developers, QA, Business Analysts     |
 
 ---
 
 ## What Is Behave?
 
-**Behave** is an open-source BDD framework for Python that allows you to write tests in a natural language style using the Gherkin syntax. 
+**Behave** is an open-source BDD framework for Python that allows you to write tests in a natural language style using the **Gherkin syntax**.
 
 ### Key Features
 
 - **Gherkin Syntax**: Write test scenarios in plain English.
 - **Python Step Definitions**: Implement test steps in Python.
-- **Acceptance Testing Support**: Complements end-to-end testing by validating the system from the user's perspective, ensuring that all components work together seamlessly.
+- **Acceptance Testing Support**: Validate the system from the user's perspective, ensuring all components work together seamlessly.
 
-### Example
+---
 
-**Feature File (`data_pipeline.feature`):**
+## Understanding Gherkin Syntax and Step Definitions
+
+### Gherkin Syntax
+
+Gherkin is a domain-specific language for writing test scenarios in plain English. It uses keywords like `Feature`, `Scenario`, `Given`, `When`, `Then`, `And`, `But`, and `Scenario Outline`.
+
+**Example Feature File (`train_capacity.feature`):**
 
 ```gherkin
-Feature: Data Pipeline Validation
+Feature: Train Capacity Assessment
 
-  Scenario: Successful data ingestion and transformation
-    Given raw data is available in the S3 bucket
-    When dbt models run
-    Then the transformed data should be stored in the data warehouse
+  Scenario: Assess capacity for a Tube train
+    Given a "Tube" train with 6 carriages
+    When 168 passengers are onboard
+    Then the train should have "Sufficient" capacity
 ```
 
-**Step Definitions (`data_pipeline_steps.py`):**
+### Step Definitions
+
+Step definitions are Python functions that Behave uses to execute the steps in your feature files. They are linked to Gherkin steps using decorators like `@given`, `@when`, `@then`, `@and`, and `@but`.
+
+**Example Step Definitions (`train_capacity_steps.py`):**
 
 ```python
-from behave import given, when, then
-import boto3
-import dbt
-import os
+from behave import given, when, then  # type: ignore
 
-@given('raw data is available in the S3 bucket')
-def step_given_raw_data_in_s3(context):
-    #We can insert assertions here
-    pass
+@given('a "{train_type}" train with {carriages:d} carriages')
+def step_given_train(context, train_type, carriages):
+    context.train = Train(train_type, carriages)
 
-@when('dbt models run')
-def step_when_data_models_run(context):
-    #We can insert assertions here
-    pass
+@when('{passengers:d} passengers are onboard')
+def step_when_passengers_onboard(context, passengers):
+    context.result = context.train.calculate_capacity(passengers)
+    context.passengers = passengers
 
-@then('the transformed data should be stored in snowflake')
-def step_then_verify_data_in_snowflake(context):
-    
-    pass
+@then('the train should have "{expected_capacity}" capacity')
+def step_then_train_capacity(context, expected_capacity):
+    assert context.result == expected_capacity, f"Expected {expected_capacity} but got {context.result}"
+```
+
+### Placeholders and Format Specifiers
+
+Placeholders in step definitions allow you to capture dynamic values from your Gherkin steps. Format specifiers define the type of the captured value.
+
+**Common Format Specifiers:**
+
+| Specifier | Type     | Description                              |
+|-----------|----------|------------------------------------------|
+| `:d`      | Integer  | Matches whole numbers (e.g., `42`)       |
+| `:f`      | Float    | Matches decimal numbers (e.g., `3.14`)   |
+| `:s`      | String   | Matches any text (e.g., `"Hello"`)       |
+| `:bool`   | Boolean  | Matches `True` or `False` (case-insensitive) |
+
+**Example:**
+
+- **Gherkin Step:**
+
+  ```gherkin
+  Given a "Tube" train with 6 carriages
+  ```
+
+- **Step Definition:**
+
+  ```python
+  @given('a "{train_type}" train with {carriages:d} carriages')
+  def step_given_train(context, train_type, carriages):
+      # train_type is a string, carriages is an integer
+      pass
+  ```
+
+### Data Tables in Gherkin Steps
+
+Data tables allow you to provide structured data within your Gherkin steps.
+
+**Example Gherkin Step with Data Table:**
+
+```gherkin
+Given the following train setups:
+    | train_type      | carriages | passengers |
+    | Tube            | 6         | 168        |
+    | SouthWestRail   | 4         | 200        |
+    | Eurostar        | 2         | 150        |
+```
+
+**Step Definition:**
+
+```python
+@given('the following train setups')
+def step_given_train_setups(context):
+    context.trains = []
+    for row in context.table:
+        train = Train(row['train_type'], int(row['carriages']))
+        passengers = int(row['passengers'])
+        context.trains.append((train, passengers))
+```
+
+**Explanation:**
+
+- `context.table` represents the data table provided in the Gherkin step.
+- We initialize `context.trains` as an empty list to store train configurations.
+- We loop through each row in the table to create `Train` instances and store them along with the number of passengers.
+
+### Scenario Outlines and Examples
+
+Scenario Outlines allow you to run the same scenario multiple times with different inputs.
+
+**Example Scenario Outline:**
+
+```gherkin
+Scenario Outline: Assess train capacity with different train types
+  Given a "<train_type>" train with <carriages> carriages
+  When <passengers> passengers are onboard
+  Then the train should have "<expected_capacity>" capacity
+
+  Examples:
+    | train_type      | carriages | passengers | expected_capacity |
+    | Tube            | 6         | 168        | Sufficient        |
+    | Tube            | 6         | 170        | Insufficient      |
+    | SouthWestRail   | 4         | 200        | Sufficient        |
+    | SouthWestRail   | 4         | 250        | Insufficient      |
+    | Eurostar        | 2         | 150        | Sufficient        |
+    | Eurostar        | 2         | 170        | Insufficient      |
+```
+
+**Explanation:**
+
+- Placeholders like `<train_type>` are replaced with values from the `Examples` table.
+- Each row in the `Examples` table represents a different test case.
+
+### Tags in Behave
+
+Tags allow you to categorize and selectively run scenarios.
+
+- **Syntax:** Place `@tag_name` above a `Feature`, `Scenario`, or `Scenario Outline`.
+
+**Example:**
+
+```gherkin
+@train_capacity
+Feature: Train Capacity Assessment
+```
+
+**Running Tagged Scenarios:**
+
+```bash
+behave --tags=@train_capacity
 ```
 
 ---
@@ -161,7 +281,7 @@ def step_then_verify_data_in_snowflake(context):
 
 ### Installation
 
-Ensure you have Python installed, then install Behave and necessary dependencies using `pip` or go to https://behave.readthedocs.io/en/latest/install/ for more options:
+Ensure you have Python installed, then install Behave using `pip`:
 
 ```bash
 pip install behave
@@ -169,28 +289,19 @@ pip install behave
 
 ### Directory Structure
 
-An example of your project could be the following:
+Your project directory might look like this:
 
 ```
 project/
 ├── features/
-│   ├── data_pipeline.feature        # Feature files
+│   ├── train_capacity.feature   # Feature files
 │   └── steps/
-│       └── data_pipeline_steps.py   # Step definitions
-├── dbt/
-│   └── models/                      # dbt models
+│       └── train_capacity_steps.py  # Step definitions
 ├── src/
-│   └── service/                     # Application code
-└── .gitlab-ci.yml                   # CI/CD configuration
+│   └── service/
+│       └── MyTrainApp.py        # Application code (Train class)
+└── requirements.txt             # Dependencies
 ```
-
-### Writing Feature Files
-
-Feature files are written in Gherkin syntax with a `.feature` extension. They describe the desired behavior of your application, pipeline.
-
-### Implementing Step Definitions
-
-Step definitions are Python functions that correspond to steps in your feature files. They implement the behavior specified in the feature files.
 
 ### Running Tests
 
@@ -202,59 +313,249 @@ behave
 
 ---
 
-## Use Cases in Data Engineering
+## BDD Implementation Example
 
-### 1. Data Ingestion Validation
+Let's walk through a practical example to solidify your understanding.
 
-**Scenario:** Ensure that data is correctly ingested from AWS MSK (Kafka) into AWS S3 or other storage solutions.
+### Feature File Explained
 
-**Feature File:**
-
-```gherkin
-Scenario: Validate data ingestion from Kafka
-  Given data is published to the Kafka topic
-  When the ingestion job runs
-  Then the data should be available in the S3 bucket
-```
-
-### 2. Data Transformation with dbt
-
-**Scenario:** Verify that dbt models transform data correctly according to business rules.
-
-**Feature File:**
+**Feature File (`train_capacity.feature`):**
 
 ```gherkin
-Scenario: Apply transformations using dbt models
-  Given raw data is available in the data warehouse
-  When dbt runs the models
-  Then the transformed tables should reflect the business logic
+@train_capacity
+Feature: Train Capacity Assessment
+
+  # This feature ensures we can assess the capacity of different trains
+  # and their carriages to determine if they can accommodate passengers
+
+  # Remember:
+  # - Tube has 28 seats per carriage
+  # - SouthWestRail has 50 seats per carriage
+  # - Eurostar has 80 seats per carriage
+
+  Scenario: Calculate capacity for a single train
+
+    Given a "Tube" train with 6 carriages
+    When 160 passengers are onboard
+    Then the train should have "Sufficient" capacity
+
+  Scenario Outline: Assess train capacity with different train types
+
+    Given a "<train_type>" train with <carriages> carriages
+    When <passengers> passengers are onboard
+    Then the train should have "<expected_capacity>" capacity
+
+    Examples:
+      | train_type      | carriages | passengers | expected_capacity |
+      | Tube            | 6         | 168        | Sufficient        |
+      | Tube            | 6         | 170        | Insufficient      |
+      | SouthWestRail   | 4         | 200        | Sufficient        |
+      | SouthWestRail   | 4         | 250        | Insufficient      |
+      | Eurostar        | 2         | 150        | Sufficient        |
+      | Eurostar        | 2         | 170        | Insufficient      |
+
+  Scenario: Assess train capacity with additional conditions
+
+    Given a "Tube" train with 6 carriages
+    When 170 passengers are onboard
+    Then the train should have "Insufficient" capacity
+    But an additional carriage can be added to accommodate the passengers
+
+  Scenario: Assess multiple train capacities
+    Given the following train setups:
+      | train_type      | carriages | passengers |
+      | Tube            | 6         | 168        |
+      | SouthWestRail   | 4         | 200        |
+      | Eurostar        | 2         | 150        |
+    When the trains are assessed for capacity
+    Then the results should be:
+      | train_type      | capacity    |
+      | Tube            | Sufficient  |
+      | SouthWestRail   | Sufficient  |
+      | Eurostar        | Sufficient  |
 ```
 
-### 3. Data Quality Checks with dbt-utils
+**Explanation:**
 
-**Scenario:** Use dbt-utils to ensure data quality and integrity.
+- **Feature**: Describes the high-level functionality being tested—in this case, "Train Capacity Assessment."
+- **Scenarios**: Different test cases covering various aspects of train capacity assessment.
+- **Comments**: Provide additional context and reminders about train capacities.
 
-**Feature File:**
+### Step Definitions Explained
 
-```gherkin
-Scenario: Check data quality using dbt-utils
-  Given transformed data is ready
-  When dbt runs the tests
-  Then all data quality tests should pass
+**Step Definitions (`train_capacity_steps.py`):**
+
+```python
+from behave import given, when, then  # type: ignore
+from src.service.MyTrainApp import Train
+
+# Create a Train instance for the specified type of train and number of carriages
+@given('a "{train_type}" train with {carriages:d} carriages')
+def step_given_train(context, train_type, carriages):
+    # We create an instance of a Train and store it in context.train
+    context.train = Train(train_type, carriages)
+
+# Calculate train capacity with the specified number of passengers
+@when('{passengers:d} passengers are onboard')
+def step_when_passengers_onboard(context, passengers):
+    # Calculate whether the train can accommodate the passengers using calculate_capacity
+    context.result = context.train.calculate_capacity(passengers)
+    context.passengers = passengers  # Store passengers for use in subsequent steps
+
+# Verify if the train has sufficient or insufficient capacity
+@then('the train should have "{expected_capacity}" capacity')
+def step_then_train_capacity(context, expected_capacity):
+    # Assert that the result matches the expected capacity (e.g., "Sufficient" or "Insufficient")
+    assert context.result == expected_capacity, f"Expected {expected_capacity} but got {context.result}"
+
+# Verify if adding a carriage would make capacity sufficient
+@then('an additional carriage can be added to accommodate the passengers')
+def step_then_add_carriage(context):
+    # Simulate adding one additional carriage and recalculate the capacity
+    additional_carriages = 1
+    train = context.train
+    total_capacity = (train.carriages + additional_carriages) * train.capacity_per_carriage[train.train_type]
+    assert context.passengers <= total_capacity, (
+        "Even with an additional carriage, capacity is insufficient"
+    )
+
+# Store train setups from a table
+@given('the following train setups')
+def step_given_train_setups(context):
+    context.trains = []
+    for row in context.table:
+        train = Train(row['train_type'], int(row['carriages']))
+        passengers = int(row['passengers'])
+        context.trains.append((train, passengers))
+
+# Assess capacity for multiple trains
+@when('the trains are assessed for capacity')
+def step_when_assess_multiple_trains(context):
+    # We iterate over the stored train configurations, calculate the capacity for each, and store the results
+    context.results = []
+    for train, passengers in context.trains:
+        result = train.calculate_capacity(passengers)
+        context.results.append({"train_type": train.train_type, "capacity": result})
+
+# Verify capacity results for multiple trains using a table
+@then('the results should be:')
+def step_then_assess_results(context):
+    # Compare the actual results with the expected results
+    for actual, expected in zip(context.results, context.table):
+        assert actual["capacity"] == expected["capacity"], (
+            f"Expected {expected['capacity']} but got {actual['capacity']} for train type {actual['train_type']}"
+        )
 ```
 
-### 4. Orchestration with AWS MWAA
+**Explanation:**
 
-**Scenario:** Validate that the Airflow (MWAA) DAGs run successfully and produce expected outcomes.
+- **`context.train`**:
 
-**Feature File:**
+  - We store the `Train` instance in `context.train` to make it accessible across steps within the same scenario.
 
-```gherkin
-Scenario: Execute MWAA DAGs for data pipeline
-  Given the Airflow environment is set up
-  When the scheduled DAG runs
-  Then the data pipeline should complete without errors
+- **`context.result`**:
+
+  - Stores the result of the capacity calculation (e.g., "Sufficient" or "Insufficient") for comparison in the `Then` step.
+
+- **`context.trains`**:
+
+  - An array to store multiple `Train` instances along with their passenger counts, used in the scenario assessing multiple trains.
+
+- **Calculating Additional Capacity**:
+
+  - In the step `@then('an additional carriage can be added to accommodate the passengers')`, we simulate adding one carriage and recalculate capacity to verify if the train can now accommodate the passengers.
+
+### Application Code Explained
+
+**Train Class (`MyTrainApp.py`):**
+
+```python
+class Train:
+    def __init__(self, train_type, carriages):
+        self.train_type = train_type
+        self.carriages = carriages
+
+        # Dictionary storing the seating capacity per carriage for different types of trains
+        self.capacity_per_carriage = {
+            "Tube": 28,
+            "SouthWestRail": 50,
+            "Eurostar": 80
+        }
+
+        # Validate the train type
+        if train_type not in self.capacity_per_carriage:
+            valid_types = ', '.join(self.capacity_per_carriage.keys())
+            raise ValueError(f"Unknown train type: {train_type}. Valid types are: {valid_types}")
+
+    def calculate_capacity(self, passengers):
+        """
+        Calculate the total capacity of the train and determine if it is sufficient
+        for the number of passengers.
+        """
+        # Fetch capacity per carriage based on train type
+        capacity_per_carriage = self.capacity_per_carriage[self.train_type]
+        total_capacity = self.carriages * capacity_per_carriage
+
+        # Return whether the train has sufficient or insufficient capacity
+        return "Sufficient" if passengers <= total_capacity else "Insufficient"
+
+    @staticmethod
+    def calculate_carriage_capacity(seats, passengers):
+        """
+        Determine if a single carriage's capacity is sufficient for the given number of passengers.
+        """
+        return "Sufficient" if passengers <= seats else "Insufficient"
 ```
+
+**Explanation:**
+
+- **`self.capacity_per_carriage`**:
+
+  - A dictionary that stores the seating capacity per carriage for each train type.
+  - **Why we do this**: To easily retrieve the capacity per carriage based on the train type.
+
+- **Validation of `train_type`**:
+
+  - Ensures that only known train types are used.
+  - **Why**: Prevents errors due to typos or unsupported train types.
+
+- **`calculate_capacity` Method**:
+
+  - Calculates the total capacity and determines if it's sufficient for the given number of passengers.
+  - **Why**: Encapsulates the logic for capacity assessment in a reusable method.
+
+- **`calculate_carriage_capacity` Static Method**:
+
+  - Determines if a single carriage can accommodate a certain number of passengers.
+  - **Why**: Provides a utility function that can be used without needing an instance of `Train`.
+
+**How to Run the Example:**
+
+1. **Set Up Directory Structure**:
+
+   ```
+   project/
+   ├── features/
+   │   ├── train_capacity.feature
+   │   └── steps/
+   │       └── train_capacity_steps.py
+   ├── src/
+   │   └── service/
+   │       └── MyTrainApp.py
+   └── requirements.txt
+   ```
+
+2. **Install Dependencies**:
+
+   ```bash
+   pip install behave
+   ```
+
+3. **Run Tests**:
+
+   ```bash
+   behave
+   ```
 
 ---
 
@@ -265,17 +566,66 @@ Scenario: Execute MWAA DAGs for data pipeline
 - **Clarity**: Use clear and concise language.
 - **Focus**: Keep scenarios focused on a single behavior or functionality.
 - **Consistency**: Maintain consistent style and terminology throughout.
+- **Use Tags**: Categorize scenarios for selective execution.
 
 ### Collaboration
 
-- **Involve Stakeholders**: Work with data analysts, engineers, and business stakeholders when writing feature files.
-- **Regular Reviews**: Continuously review and update tests to reflect changing requirements and data models.
+- **Involve Stakeholders**: Collaborate with data analysts, engineers, and business stakeholders when writing feature files.
+- **Regular Reviews**: Continuously review and update tests to reflect changing requirements.
 
 ### Maintaining Tests
 
 - **DRY Principle**: Avoid repeating code in step definitions.
-- **Organization**: Group related features and steps logically in folders.
-- **Version Control**: Store your tests in Git alongside your application code and dbt projects.
+- **Organization**: Group related features and steps logically.
+- **Version Control**: Store your tests in Git alongside your application code.
+
+---
+
+## Debugging in Behave
+
+### Verbose Output
+
+Get detailed output during test execution:
+
+```bash
+behave -v
+```
+
+### No Capture
+
+See print statements and logs by disabling output capturing:
+
+```bash
+behave --no-capture
+```
+
+### Plain Formatter
+
+Use the plain formatter for simplified output:
+
+```bash
+behave -f plain
+```
+
+### Combine Options
+
+```bash
+behave --no-capture -f plain -v
+```
+
+### Running Specific Tags
+
+Run scenarios with a specific tag:
+
+```bash
+behave --tags=@train_capacity
+```
+
+Exclude a tag:
+
+```bash
+behave --tags=~@wip
+```
 
 ---
 
@@ -283,7 +633,7 @@ Scenario: Execute MWAA DAGs for data pipeline
 
 ### Continuous Integration Setup
 
-Integrate Behave tests into your GitLab CI/CD pipeline to automate testing on code commits and merge requests.
+Integrate Behave tests into your GitLab CI/CD pipeline to automate testing.
 
 ### `.gitlab-ci.yml` Example
 
@@ -293,13 +643,13 @@ stages:
 
 variables:
   AWS_REGION: us-east-1
-  #Add any other AWS, dbt etc variables you need
+  # Add any other AWS, dbt, etc., variables you need
 
 test_behave:
   image: python:3.9
   stage: test
   script:
-    - pip install -r requirements.txt #Alternatively, use an image with the dependencies installed
+    - pip install -r requirements.txt  # Alternatively, use an image with dependencies installed
     - behave
   only:
     - main
@@ -309,13 +659,13 @@ test_behave:
 
 1. **Create CI Configuration**: Add a `.gitlab-ci.yml` file to your repository.
 2. **Install Dependencies**: Ensure that `behave` and other dependencies are installed in the CI environment.
-3. **Configure AWS Credentials**: Set up AWS credentials in GitLab CI/CD variables for accessing AWS services.
+3. **Configure AWS Credentials**: Set up AWS credentials in GitLab CI/CD variables.
 4. **Run Tests**: Configure the script to execute `behave` during the testing stage.
-5. **View Results**: Check the pipeline results in GitLab to see if tests pass or fail.
+5. **View Results**: Check the pipeline results in GitLab.
 
 ### Generating Test Reports
 
-You can generate JUnit XML reports with Behave and configure GitLab to display them.
+Generate JUnit XML reports with Behave and configure GitLab to display them.
 
 **Command:**
 
@@ -339,17 +689,22 @@ test_behave:
 ## Resources
 
 - **Behave Documentation**: [https://behave.readthedocs.io/en/latest/](https://behave.readthedocs.io/en/latest/)
+- **Behave Examples**: [https://jenisys.github.io/behave.example/](https://jenisys.github.io/behave.example/)
 - **Gherkin Syntax Reference**: [https://cucumber.io/docs/gherkin/](https://cucumber.io/docs/gherkin/)
+- **Behave Data Types**: [https://www.tutorialspoint.com/behave/behave_data_types.htm](https://www.tutorialspoint.com/behave/behave_data_types.htm)
 
 ---
 
 ## Conclusion
 
-By integrating BDD with Behave into your data engineering projects, especially in conjunction with tools like AWS, dbt, and GitLab, you can:
+By integrating BDD with Behave into your data engineering projects, you can:
 
 - **Improve Collaboration**: Enhance communication between data engineers, analysts, and stakeholders.
 - **Ensure Data Quality**: Validate that your data pipelines meet business requirements and data integrity standards.
-- **Automate Testing**: Incorporate automated acceptance testing into your CI/CD pipeline for continuous integration and delivery.
-- **Increase Reliability**: Detect issues early through effective acceptance testing, reducing the risk of defects in production.
-- **Maintain High Standards**: Uphold high-quality standards in your data processing workflows.
+- **Automate Testing**: Incorporate automated acceptance testing into your CI/CD pipeline.
+- **Increase Reliability**: Detect issues early, reducing the risk of defects in production.
+- **Maintain High Standards**: Uphold quality in your data processing workflows.
 
+---
+
+**Happy testing!**
